@@ -1,10 +1,12 @@
 ---
-meta:
-    author: ProjectSoft
+Title: EvoSendBot Evolution CMS
+Author: ProjectSoft
+Date: 22.10.2023 21:00
+Comment: Плагин и TV параметры для автопостинга новостей, ресурсов в соц. сети, мессенджеры
 ---
 # EvoSendBot
 
-Плагин и TV параметры для автопостинга новостей, ресурсов
+Плагин и TV параметры на Evolution CMS для автопостинга новостей, ресурсов в соц. сети, мессенджеры
 
 Требует обязательного установленного multiTV
 * Telegram
