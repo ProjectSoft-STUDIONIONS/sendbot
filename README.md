@@ -1,6 +1,6 @@
 ---
 meta:
-	author: ProjectSoft
+    author: ProjectSoft
     topic: README
 ---
 # EvoSendBot
