@@ -3,8 +3,8 @@
  *
  * imageSoc
  *
- * @category	tv
  * @name	imageSoc
+ * @category	tv
  * @internal	@caption Изображение для страницы
  * @internal	@input_type image
  * @internal	@modx_category SEO

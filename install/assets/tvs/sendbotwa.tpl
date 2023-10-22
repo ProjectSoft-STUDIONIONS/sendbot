@@ -1,11 +1,11 @@
 /**
- * sendBotVk
+ * sendBotWa
  *
- * sendBotVk
+ * sendBotWa
  *
- * @name	sendBotVk
+ * @name	sendBotWa
  * @category	tv
- * @internal	@caption Отправить в ВКонтакте
+ * @internal	@caption Отправить в WhatsApp
  * @internal	@input_type checkbox
  * @internal	@modx_category Api Bot
  * @internal	@input_default 0

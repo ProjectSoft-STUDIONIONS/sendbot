@@ -109,14 +109,28 @@ switch ($modx->event->name) {
 		    category:        Api Bot
 		TV параметр sendBotVk документа
 		    name:        sendBotVk
-		    caption:     Отправить в Telegram
+		    caption:     Отправить в Vkontakte
 		    type:        checkbox
 		    elements:    Да==1
 		    default_text:    0
 		    category:    Api Bot
 		TV параметр sendBotOk документа
 		    name:        sendBotOk
-		    caption:     Отправить в Telegram
+		    caption:     Отправить в Одноклассники
+		    type:        checkbox
+		    elements:    Да==1
+		    default_text:    0
+		    category:    Api Bot
+		TV параметр sendBotVb документа
+		    name:        sendBotVb
+		    caption:     Отправить в Viber
+		    type:        checkbox
+		    elements:    Да==1
+		    default_text:    0
+		    category:    Api Bot
+		TV параметр sendBotOk документа
+		    name:        sendBotWa
+		    caption:     Отправить в WhatsApp
 		    type:        checkbox
 		    elements:    Да==1
 		    default_text:    0
@@ -131,7 +145,7 @@ switch ($modx->event->name) {
 				'api'=>1,
 				'JSONformat'=>'old',
 				'tvPrefix'=>'', 
-				'tvList'=>'sendBotTlg,sendBotVk,sendBotOk,imageSoc,tags,photogallery'
+				'tvList'=>'sendBotTlg,sendBotVk,sendBotOk,sendBotVb,sendBotWa,imageSoc,tags,photogallery'
 			)
 		);
 		$json = array();
@@ -207,18 +221,28 @@ switch ($modx->event->name) {
 							**/
 							switch($row["name"]){
 								case "sendBotTlg":
-									//Telegram
+									// Telegram
 									$arr["type"] = "tlg";
 									$modx->invokeEvent("OnSendBot", $arr);
 									break;
 								case "sendBotVk":
-									//VK
+									// VK
 									$arr["type"] = "vk";
 									$modx->invokeEvent("OnSendBot", $arr);
 									break;
 								case "sendBotOk":
-									//OK
+									// OK
 									$arr["type"] = "ok";
+									$modx->invokeEvent("OnSendBot", $arr);
+									break;
+								case "sendBotVb":
+									// Viber
+									$arr["type"] = "vb";
+									$modx->invokeEvent("OnSendBot", $arr);
+									break;
+								case "sendBotWa":
+									// WhatsApp
+									$arr["type"] = "wa";
 									$modx->invokeEvent("OnSendBot", $arr);
 									break;
 							}
@@ -381,6 +405,14 @@ switch ($modx->event->name) {
 			case "ok":
 				//Отправляем в OK
 				// С группами в ОК ни всё понятно. Очень скудное API.
+				break;
+			case "vb":
+				//Отправляем в Viber
+				// Реализовываем...
+				break;
+			case "wa":
+				//Отправляем в WhatsApp
+				// Реализовываем...
 				break;
 			case "form":
 				// Вопросы с формы обратной связи

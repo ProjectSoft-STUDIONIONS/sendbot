@@ -3,9 +3,9 @@
  *
  * sendBotOk
  *
- * @category	tv
  * @name	sendBotOk
- * @internal	@caption Отправить в OK
+ * @category	tv
+ * @internal	@caption Отправить в Одноклассники
  * @internal	@input_type checkbox
  * @internal	@modx_category Api Bot
  * @internal	@input_default 0
