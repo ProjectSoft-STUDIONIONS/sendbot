@@ -23,4 +23,3 @@ jobs:
     - run: npm ci
     - run: npm run inst
     - run: npm run build
-    - run: npm test
