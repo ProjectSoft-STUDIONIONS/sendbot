@@ -140,10 +140,14 @@ switch ($modx->event->name) {
 			if($json = json_decode($dlJson, true)):
 				// Debug
 				debugEvoSend_Write("OnDocFormSave.txt", $json, $debug);
-				
+				/**
+				 * Сбор данных
+				**/
 				if(count($json)):
 					$json = $json[$params['id']];
-					$checks = isset($params['check']) ? array_map('trim', explode(",", $params['check'])) : array();
+					/**
+					 * Собираем фотографии из multiTV параметра photogallery
+					**/
 					if($photos = json_decode($json["photogallery"], true)):
 						if(count($photos["fieldValue"])):
 							foreach($photos["fieldValue"] as $key => $value):
@@ -151,6 +155,9 @@ switch ($modx->event->name) {
 							endforeach;
 						endif;
 					endif;
+					/**
+					 * Соберём теги из TV параметра tags
+					**/
 					$tgs = explode(",", $json["tags"]);
 					$tags = array();
 					foreach($tgs as $key => $value):
@@ -159,6 +166,9 @@ switch ($modx->event->name) {
 							$tags[] = "#" . $val;
 						endif;
 					endforeach;
+					/**
+					 * Соберём нужные данные для отправки
+					**/
 					$arr = array(
 						'type'          => '',
 						'title'         => trim(strip_tags(!empty($json["longtitle"]) ? $json["longtitle"] : $json["pagetitle"])),
@@ -168,20 +178,33 @@ switch ($modx->event->name) {
 						'photos'        => $arr_photos,
 						'url'           => $modx->makeUrl($params["id"], '', '', 'full')
 					);
-					$ch = array();
+					/**
+					 * Пробемжимся по TV параметрам checkbox отсылки
+					**/
 					$tableVar = $modx->getFullTableName('site_tmplvars');
 					$tableVal = $modx->getFullTableName('site_tmplvar_contentvalues');
-					$ids = join("','", $checks);
-					$rs = $modx->db->select('id,name', $tableVar, "id IN ('$ids')");
+					$rs = $modx->db->select('id,name', $tableVar, "name IN ('sendBotTlg','sendBotVk','sendBotOk')");
 					while( $row = $modx->db->getRow( $rs ) ):
+						/**
+						* Обновим состояние chekbox всостояние unchecked
+						**/
 						$rws = $modx->db->select('*', $tableVal, "contentid='" . $params['id'] . "' and tmplvarid='" . $row['id'] . "'");
 						$rows = $modx->db->getRow($rws);
+						/**
+						 * Если чекбокс был чекнутый
+						**/
 						if($rows["value"]):
+							/**
+							 * Установим параметр в состояние unchecked
+							**/
 							$data = array(
 								"value" => 0,
 								"tmplvarid" => $row['id']
 							);
 							$modx->db->update($data, $tableVal, "id='" . $rows["id"] . "'");
+							/**
+							 * По имени чкбокса определям его тип и что нужно сделать
+							**/
 							switch($row["name"]){
 								case "sendBotTlg":
 									//Telegram
@@ -199,7 +222,6 @@ switch ($modx->event->name) {
 									$modx->invokeEvent("OnSendBot", $arr);
 									break;
 							}
-							$ch[] = $arr;
 						endif;
 					endwhile;
 				endif;
@@ -208,6 +230,9 @@ switch ($modx->event->name) {
 		break;
 	case 'OnSendBot':
 		// Подготавливаем нужные параметры для отправки
+		/**
+		 * По типу определяем действие
+		**/
 		switch($params["type"]){
 			case "tlg":
 				//Отправляем в Telegram
@@ -223,19 +248,29 @@ switch ($modx->event->name) {
 					$picture = MODX_BASE_PATH . $params['image'];
 					$baseName = pathinfo($picture, PATHINFO_BASENAME);
 					$type = mime_content_type($picture);
+					$curl_photo = curl_file_create($picture, $type, $baseName);
+					/**
+					 * Собираем текст сообщения
+					 * К тексту сообщения прибавим теги для сообщения
+					**/
 					$tags = !empty($params['tags']) ? $params['tags'] . PHP_EOL . PHP_EOL : "";
-					$msg = "*" . $title . "*" . PHP_EOL . PHP_EOL . $params['message'] . PHP_EOL . PHP_EOL . $tags . $pageUrl;
+					$message = "*" . $title . "*" . PHP_EOL . PHP_EOL . $params['message'] . PHP_EOL . PHP_EOL . $tags . $pageUrl;
+					/**
+					 * Собираем параметры для отправки
+					**/
 					$arrayQuery = array(
 						'chat_id' => $chanel_id,
 						'protect_content' => true,
-						'caption' => $msg,
-						'photo' => curl_file_create($picture, $type, $baseName)
+						'caption' => $message,
+						'photo' => $curl_photo
 					);
-					// Debug;
+					// Debug
 					debugEvoSend_Write("OnSendBot_Telegram.txt", $arrayQuery, $debug);
-					
-					// Отправляем
+					/**
+					 * Отправляем в Telegram
+					**/
 					$result = sendBotTelegram($url, $arrayQuery, $proxy);
+					// Debug
 					debugEvoSend_Write("OnSendBot_Telegram_Result.txt", $result);
 				endif;
 				break;
@@ -259,21 +294,32 @@ switch ($modx->event->name) {
 										if (!empty($server->response->upload_url)):
 											foreach($images as $key =>$image):
 												/**
-												 ** Curl upload photo
+												 ** Curl Загружаем фото
 												**/
 												$upload = curlUploadVkPhoto($server->response->upload_url, $image, $proxy);
+												// Debug
+												debugEvoSend_Write("OnSendBot_VK_upload_$key.txt", $upload, $debug);
 												/**
-												 ** End Curl upload photo
+												 * Если загрузка произошла
 												**/
-												debugEvoSend_Write("OnSendBot_VK_upload.txt", $upload, $debug);
 												if($upload = json_decode($upload)):
+													/**
+													 * Если есть данные о загруженнойфотографии
+													**/
 													if (!empty($upload->server)):
 														// Сохранение фото в группе.
+														/**
+														 * Если загрузка удачная - сохраняем в группе методом photos.saveWallPhoto
+														**/
 														try {
 															$url = 'https://api.vk.com/method/photos.saveWallPhoto?group_id=' . $group_id . '&server=' . $upload->server . '&photo=' . stripslashes($upload->photo) . '&hash=' . $upload->hash . '&access_token=' . $access_token . '&v=5.154';
 															$save = getCurlQuery($url, $proxy);
-															
+															// Debug
 															debugEvoSend_Write("OnSendBot_VK_saveWallPhoto.txt", $save, $debug);
+															/**
+															 * Если сохранение удачное и присутствует свойство response
+															 * сохраняем в массив имя загруженной фотографии
+															**/
 															if($save = json_decode($save)):
 																if(is_array($save->response)):
 																	if (!empty($save->response[0]->id)):
@@ -282,7 +328,7 @@ switch ($modx->event->name) {
 																endif;
 															endif;
 														}catch(Exception $e) {
-															// Ничего не выводим
+															// Если была ошибка - Ничего не выводим
 														}
 													endif;
 												endif;
@@ -292,25 +338,41 @@ switch ($modx->event->name) {
 								endif;
 							endif;
 						}catch(Exception $e){
-							// Ничего не выводим
+							// Если была ошибка - Ничего не выводим
 						}
 					endif;
+					/**
+					 * Добавим к массиву с фотографией ссылку на страницу сайта
+					**/
 					$photos[] = $link;
+					/**
+					 * Собираем текст сообщения
+					 * К тексту сообщения прибавим теги для сообщения
+					**/
 					$tags = !empty($params['tags']) ? PHP_EOL . PHP_EOL . $params['tags'] : "";
+					$message = $params['message'] . $tags;
+					/**
+					 * Для параметра запроса attachments объеденим имена фотографий и ссылки на новость в строку
+					**/
+					$photos = implode(',', $photos);
 					$post_params = array(
 						'v'            => '5.154',
 						'access_token' => $access_token,
 						'owner_id'     => '-' . $group_id, 
 						'from_group'   => '1', 
-						'message'      => $params['message'] . $tags,
-						'attachments'  => implode(',', $photos)
+						'message'      => $message,
+						'attachments'  => $photos
 					);
+					/**
+					 * Отправляем публикацию новости в VK
+					**/
 					try {
 						$url = 'https://api.vk.com/method/wall.post?' . http_build_query($post_params);
 						$post_request = getCurlQuery($url, $proxy);
+						// Debug
 						debugEvoSend_Write("OnSendBot_VK_wall.txt", $post_request, $debug);
 					}catch(Exception $e) {
-						// Ничего не выводим
+						// Если была ошибка - Ничего не выводим
 					}
 					// Debug
 					debugEvoSend_Write("OnSendBot_VK.txt", $post_params, $debug);
@@ -323,7 +385,7 @@ switch ($modx->event->name) {
 			case "form":
 				// Вопросы с формы обратной связи
 				/**
-				 ** Перенести сюда
+				 ** Перенести сюда или отставить?
 				**/
 				break;
 		}
