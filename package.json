@@ -1,6 +1,6 @@
 {
 	"name": "sendbot",
-	"version": "1.0.0",
+	"version": "1.0.3",
 	"description": "Плагин и TV параметры на Evolution CMS для автопостинга новостей, ресурсов в соц. сети, мессенджеры",
 	"main": "index.js",
 	"scripts": {
@@ -16,5 +16,8 @@
 	"bugs": {
 		"url": "https://github.com/ProjectSoft-STUDIONIONS/sendbot/issues"
 	},
-	"homepage": "https://github.com/ProjectSoft-STUDIONIONS/sendbot#readme"
+	"homepage": "https://github.com/ProjectSoft-STUDIONIONS/sendbot#readme",
+	"dependencies": {
+		"node-zip": "^1.1.1"
+	}
 }
