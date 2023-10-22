@@ -67,8 +67,11 @@ endif;
 **/
 if(!function_exists('debugEvoSend_Write')):
 	function debugEvoSend_Write($file, $data, $debug = false){
+		$path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+		if(is_file($path . $file)):
+			@unlink($path . $file);
+		endif;
 		if($debug):
-			$path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
 			try {
 				@file_put_contents($path . $file, print_r($data, true));
 			}catch(Exception $e){
@@ -81,6 +84,7 @@ endif;
 $params = $modx->event->params;
 $debug = isset($params["debug_event"]) ? filter_var($params["debug_event"], FILTER_VALIDATE_BOOLEAN) : false;
 $proxy = isset($params["proxy"]) ? $params["proxy"] : false;
+
 switch ($modx->event->name) {
 	case 'OnDocFormSave':
 		/**
