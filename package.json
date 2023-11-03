@@ -1,6 +1,6 @@
 {
 	"name": "sendbot",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Плагин и TV параметры на Evolution CMS для автопостинга новостей, ресурсов в соц. сети, мессенджеры",
 	"main": "index.js",
 	"scripts": {
