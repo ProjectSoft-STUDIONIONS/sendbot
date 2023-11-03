@@ -124,8 +124,12 @@ const ZipFolder = function() {
 			template = `//<?php${a.docblock}${a.docblock}\n${a.required}`;
 		plg.file(a.fname, fs.readFileSync(path.normalize(`${rmp}/plugins/${a.fname}`), {encoding: 'utf8'}));
 	});
+	// Плагин
 	let php_plg = zip.folder(`${assets}/plugins/evosendbot`);
 	php_plg.file('plugin.evosendbot.php', fs.readFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/plugin.evosendbot.php`), {encoding: 'utf8'}));
+	// multiTV photogallery config
+	let php_tvs = zip.folder(`${assets}/tvs/multitv/configs`);
+	php_tvs.file('photogallery.config.inc.php', fs.readFileSync(path.normalize(`${__dirname}/assets/tvs/multitv/configs/photogallery.config.inc.php`), {encoding: 'utf8'}));
 	// pause
 	setTimeout(() =>{
 		let data = zip.generate({base64:false, compression:'DEFLATE'});
