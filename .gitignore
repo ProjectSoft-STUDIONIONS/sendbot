@@ -1,3 +1,6 @@
 *.sublime-workspace
 node_modules
 *копия*
+*.zip
+*.ini
+*.ico

@@ -3,6 +3,8 @@ const fs = require('fs'),
 	rmp = path.normalize(__dirname + '/install/assets'),
 	pkg = require(path.normalize(__dirname + '/package.json'));
 const version = pkg.version,
+	evoname = pkg.evoname,
+	category = "API BOT",
 	tvsChecks = [
 		{
 			"fname"          : "sendbottlg.tpl",
@@ -10,7 +12,7 @@ const version = pkg.version,
 			"name"           : "sendBotTlg",
 			"caption"        : "Отправить в Telegram",
 			"input_type"     : "checkbox",
-			"modx_category"  : "Api Bot",
+			"modx_category"  : category,
 			"input_default"  : "0",
 			"input_options"  : "Да==1"
 		},
@@ -20,7 +22,7 @@ const version = pkg.version,
 			"name"           : "sendBotVk",
 			"caption"        : "Отправить в ВКонтакте",
 			"input_type"     : "checkbox",
-			"modx_category"  : "Api Bot",
+			"modx_category"  : category,
 			"input_default"  : "0",
 			"input_options"  : "Да==1"
 		},
@@ -30,7 +32,7 @@ const version = pkg.version,
 			"name"           : "sendBotOk",
 			"caption"        : "Отправить в Одноклассники",
 			"input_type"     : "checkbox",
-			"modx_category"  : "Api Bot",
+			"modx_category"  : category,
 			"input_default"  : "0",
 			"input_options"  : "Да==1"
 		},
@@ -40,7 +42,7 @@ const version = pkg.version,
 			"name"           : "sendBotVb",
 			"caption"        : "Отправить в Viber",
 			"input_type"     : "checkbox",
-			"modx_category"  : "Api Bot",
+			"modx_category"  : category,
 			"input_default"  : "0",
 			"input_options"  : "Да==1"
 		},
@@ -50,7 +52,7 @@ const version = pkg.version,
 			"name"           : "sendBotWa",
 			"caption"        : "Отправить в WhatsApp",
 			"input_type"     : "checkbox",
-			"modx_category"  : "Api Bot",
+			"modx_category"  : category,
 			"input_default"  : "0",
 			"input_options"  : "Да==1"
 		},
@@ -60,7 +62,7 @@ const version = pkg.version,
 			"name"           : "tags",
 			"caption"        : "Теги для соц. Сетей",
 			"input_type"     : "text",
-			"modx_category"  : "Api Bot",
+			"modx_category"  : category,
 			"input_default"  : "",
 			"input_options"  : ""
 		},
@@ -90,15 +92,15 @@ const version = pkg.version,
 			"fname"    : "evosendbot.tpl",
 			"docblock" : `
 /**
- * EvoSendBot
+ * ${evoname}
  *
- * EvoSendBot плагин автопостинга в Telegram, VK, OK, Viber, WhatsApp
+ * ${evoname} плагин автопостинга в Telegram, VK, OK, Viber, WhatsApp
  *
  * @category    plugin
  * @author      ProjectSoft
  * @version     ${version}
  * @internal    @events OnDocFormSave,OnSendBot
- * @internal    @modx_category Api Bot
+ * @internal    @modx_category ${category}
  * @internal    @properties &bot_token=Токен Бота Telegram;text;;;Токен Бота Telegram &chat_id=ID канала или пользователя  Telegram;text;;;ID канала или пользователя  Telegram &group_id=ID группы ВК;text;;;ID группы ВК &access_token=Токен доступа приложения VK;text;;;Токен доступа приложения VK &version_vk=API версия VK;text;5.154;;На момент разработки API версия VK 5.154 &proxy=Прокси;text;;;Если требуется прокси подключение. Например 10.0.63.52:3128 &debug_event=Дебаг плагина;list;yes,no;no;;Включение дебаг плагина. Дебаг файлы сохраняется в директории плагина
  * @internal    @disabled 0
  * @internal    @installset base
@@ -108,8 +110,8 @@ const version = pkg.version,
 	];
 const ZipFolder = function() {
 	const zip = new require('node-zip')(),
-		install = path.normalize(`sendbot/install`),
-		assets  = path.normalize(`sendbot/assets`);
+		install = path.normalize(`${pkg.name}/install`),
+		assets  = path.normalize(`${pkg.name}/assets`);
 
 	let sql = zip.folder(install);
 	sql.file('setup.data.sql', fs.readFileSync(path.normalize(`${__dirname}/install/setup.data.sql`), {encoding: 'utf8'}));
@@ -133,14 +135,14 @@ const ZipFolder = function() {
 	// pause
 	setTimeout(() =>{
 		let data = zip.generate({base64:false, compression:'DEFLATE'});
-		fs.writeFileSync('sendbot.zip', data, 'binary');
-		console.log('> SAVE sendbot.zip');
+		fs.writeFileSync(`${pkg.name}.zip`, data, 'binary');
+		console.log(`> SAVE ${pkg.name}.zip`);
 	}, 2000);
 };
 try {
-	fs.stat(path.normalize(__dirname + '/sendbot.zip'), (err) => {
+	fs.stat(path.normalize(__dirname + `/${pkg.name}.zip`), (err) => {
 		if(!err){
-			fs.unlinkSync(path.normalize(__dirname + '/sendbot.zip'));
+			fs.unlinkSync(path.normalize(__dirname + `/${pkg.name}.zip`));
 		}
 	});
 	fs.access(rmp, (err) => {

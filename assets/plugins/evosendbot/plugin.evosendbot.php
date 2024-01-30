@@ -68,12 +68,11 @@ endif;
 if(!function_exists('debugEvoSend_Write')):
 	function debugEvoSend_Write($file, $data, $debug = false){
 		$path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-		if(is_file($path . $file)):
-			@unlink($path . $file);
-		endif;
+		$mask = '.txt';
+		array_map('unlink', glob('*' . $mask));
 		if($debug):
 			try {
-				@file_put_contents($path . $file, print_r($data, true));
+				@file_put_contents($path . $file . $mask, print_r($data, true));
 			}catch(Exception $e){
 				// Не нужен вывод
 			}
@@ -153,7 +152,7 @@ switch ($modx->event->name) {
 		if(is_string($dlJson)):
 			if($json = json_decode($dlJson, true)):
 				// Debug
-				debugEvoSend_Write("OnDocFormSave.txt", $json, $debug);
+				debugEvoSend_Write("OnDocFormSave", $json, $debug);
 				/**
 				 * Сбор данных
 				**/
@@ -289,13 +288,13 @@ switch ($modx->event->name) {
 						'photo' => $curl_photo
 					);
 					// Debug
-					debugEvoSend_Write("OnSendBot_Telegram.txt", $arrayQuery, $debug);
+					debugEvoSend_Write("OnSendBot_Telegram", $arrayQuery, $debug);
 					/**
 					 * Отправляем в Telegram
 					**/
 					$result = sendBotTelegram($url, $arrayQuery, $proxy);
 					// Debug
-					debugEvoSend_Write("OnSendBot_Telegram_Result.txt", $result);
+					debugEvoSend_Write("OnSendBot_Telegram_Result", $result);
 				endif;
 				break;
 			case "vk":
@@ -322,7 +321,7 @@ switch ($modx->event->name) {
 												**/
 												$upload = curlUploadVkPhoto($server->response->upload_url, $image, $proxy);
 												// Debug
-												debugEvoSend_Write("OnSendBot_VK_upload_$key.txt", $upload, $debug);
+												debugEvoSend_Write("OnSendBot_VK_upload_$key", $upload, $debug);
 												/**
 												 * Если загрузка произошла
 												**/
@@ -339,7 +338,7 @@ switch ($modx->event->name) {
 															$url = 'https://api.vk.com/method/photos.saveWallPhoto?group_id=' . $group_id . '&server=' . $upload->server . '&photo=' . stripslashes($upload->photo) . '&hash=' . $upload->hash . '&access_token=' . $access_token . '&v=5.154';
 															$save = getCurlQuery($url, $proxy);
 															// Debug
-															debugEvoSend_Write("OnSendBot_VK_saveWallPhoto.txt", $save, $debug);
+															debugEvoSend_Write("OnSendBot_VK_saveWallPhoto", $save, $debug);
 															/**
 															 * Если сохранение удачное и присутствует свойство response
 															 * сохраняем в массив имя загруженной фотографии
@@ -394,12 +393,12 @@ switch ($modx->event->name) {
 						$url = 'https://api.vk.com/method/wall.post?' . http_build_query($post_params);
 						$post_request = getCurlQuery($url, $proxy);
 						// Debug
-						debugEvoSend_Write("OnSendBot_VK_wall.txt", $post_request, $debug);
+						debugEvoSend_Write("OnSendBot_VK_wall", $post_request, $debug);
 					}catch(Exception $e) {
 						// Если была ошибка - Ничего не выводим
 					}
 					// Debug
-					debugEvoSend_Write("OnSendBot_VK.txt", $post_params, $debug);
+					debugEvoSend_Write("OnSendBot_VK", $post_params, $debug);
 				endif;
 				break;
 			case "ok":
