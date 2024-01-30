@@ -137,7 +137,7 @@ const ZipFolder = function() {
 		let data = zip.generate({base64:false, compression:'DEFLATE'});
 		fs.writeFileSync(`${pkg.name}.zip`, data, 'binary');
 		console.log(`> SAVE ${pkg.name}.zip`);
-	}, 2000);
+	}, 1000);
 };
 try {
 	fs.stat(path.normalize(__dirname + `/${pkg.name}.zip`), (err) => {
@@ -166,15 +166,15 @@ try {
 							template = `/**
  * ${a.name}
  *
- * ${a.name}
+ * ${a.caption}
  *
- * @name	${a.name}
- * @category	${a.category}
- * @internal	@caption ${a.caption}
- * @internal	@input_type ${a.input_type}
- * @internal	@modx_category ${a.modx_category}
- * @internal	@input_default ${a.input_default}
- * @internal	@input_options ${a.input_options}
+ * @name        ${a.name}
+ * @category    ${a.category}
+ * @internal    @caption ${a.caption}
+ * @internal    @input_type ${a.input_type}
+ * @internal    @modx_category ${a.modx_category}
+ * @internal    @input_default ${a.input_default}
+ * @internal    @input_options ${a.input_options}
  */\n`;
 				 		fs.writeFileSync(path.normalize(`${rmp}/tvs/${filename}`), template, {encoding: 'utf8'});
 					});
