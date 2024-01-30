@@ -24,7 +24,7 @@ $settings['templates'] = array(
 	<div class="photogallery-item">
 		<div class="column photogallery-item-image">
 			<a href="[(site_url)][+image+]" data-fancybox-group="photogallery" data-fancybox="ptogallery" data-caption="[+title:ifempty=`[*pagetitle:hsc*]`+]" data-loop="true" title="[+title:ifempty=`[*pagetitle:hsc*]`+]">
-				<img src="[[thumb? &input=`[+image+]` &options=`w=375,h=240,zc=C`]]" alt="[+title:ifempty=`[*pagetitle:hsc*]`+]">
+				<img src="[[phpthumb? &input=`[+image+]` &options=`w=375,h=240,zc=C`]]" alt="[+title:ifempty=`[*pagetitle:hsc*]`+]">
 			</a>
 		</div>
 	</div>'
