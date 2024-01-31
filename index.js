@@ -108,6 +108,10 @@ const version = pkg.version,
  			"required" : `require MODX_BASE_PATH.'assets/plugins/evosendbot/plugin.evosendbot.php';\n`
 		}
 	];
+
+/**
+ * Сборка архива
+ */
 const ZipFolder = function() {
 	const zip = new require('node-zip')(),
 		install = path.normalize(`${pkg.name}/install`),
@@ -139,7 +143,14 @@ const ZipFolder = function() {
 		console.log(`> SAVE ${pkg.name}.zip`);
 	}, 1000);
 };
+
+/**
+ * Подготовка к упаковке
+ * Пишем шаблоны
+ * Упаковываем
+ */
 try {
+	// Удаляем архив
 	fs.stat(path.normalize(__dirname + `/${pkg.name}.zip`), (err) => {
 		if(!err){
 			fs.unlinkSync(path.normalize(__dirname + `/${pkg.name}.zip`));
@@ -147,20 +158,35 @@ try {
 	});
 	fs.access(rmp, (err) => {
 		if(!err){
+			/**
+			 * Удаляем всё в install/assets
+			 */
 			fs.rmSync(rmp, { recursive: true, force: true });
 		}
+		/**
+		 * Проверяем папку install/assets/plugins
+		 */
 		fs.access(path.normalize(`${rmp}/plugins`), (error) => {
 			if (error && error.code === 'ENOENT') {
 				fs.mkdirSync(path.normalize(`${rmp}/plugins`), { recursive: true });
+				/**
+				 * Пишем плагин в папку install/assets/plugins
+				 */
 				plugins.forEach((a, b, c) => {
 					const filename = a.fname,
 						template = `//<?php${a.docblock}${a.docblock}\n${a.required}`;
 					fs.writeFileSync(path.normalize(`${rmp}/plugins/${filename}`), template, {encoding: 'utf8'});
 				});
 			}
+			/**
+			 * Проверяем папку install/assets/tvs
+			 */
 			fs.access(path.normalize(`${rmp}/tvs`), (error) => {
 				if (error && error.code === 'ENOENT') {
 					fs.mkdirSync(path.normalize(`${rmp}/tvs`), { recursive: true });
+					/**
+					 * Пишем все tv в папку install/assets/tvs
+					 */
 					tvsChecks.forEach((a, b, c) => {
 						const filename = a.fname,
 							template = `/**
@@ -178,6 +204,9 @@ try {
  */\n`;
 				 		fs.writeFileSync(path.normalize(`${rmp}/tvs/${filename}`), template, {encoding: 'utf8'});
 					});
+					/**
+					 * Запускаем сборку архива
+					 */
 					ZipFolder();
 				}
 			});
