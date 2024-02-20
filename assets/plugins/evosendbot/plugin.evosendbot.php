@@ -69,10 +69,10 @@ if(!function_exists('debugEvoSend_Write')):
 	function debugEvoSend_Write($file, $data, $debug = false){
 		$path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
 		$mask = '.txt';
-		array_map('unlink', glob('*' . $mask));
+		$write_str = "\n--------------------------------------------------\n" . time() . "\n--------------------------------------------------\n" . print_r($data, true) . "\n--------------------------------------------------\n";
 		if($debug):
 			try {
-				@file_put_contents($path . $file . $mask, print_r($data, true));
+				@file_put_contents($path . $file . $mask, $write_str, FILE_APPEND);
 			}catch(Exception $e){
 				// Не нужен вывод
 			}
@@ -321,7 +321,7 @@ switch ($modx->event->name) {
 												**/
 												$upload = curlUploadVkPhoto($server->response->upload_url, $image, $proxy);
 												// Debug
-												debugEvoSend_Write("OnSendBot_VK_upload_$key", $upload, $debug);
+												debugEvoSend_Write("OnSendBot_VK_upload", $upload, $debug);
 												/**
 												 * Если загрузка произошла
 												**/
