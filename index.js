@@ -130,7 +130,7 @@ const readMD = async function (file) {
 /**
  * Сборка архива
  */
-const ZipFolder = function() {
+const ZipFolder = async function() {
 	const zip = new require('node-zip')(),
 		install = path.normalize(`${pkg.name}/install`),
 		assets  = path.normalize(`${pkg.name}/assets`);
@@ -151,29 +151,38 @@ const ZipFolder = function() {
 	// Плагин
 	let php_plg = zip.folder(`${assets}/plugins/evosendbot`);
 	php_plg.file('plugin.evosendbot.php', fs.readFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/plugin.evosendbot.php`), {encoding: 'utf8'}));
-	php_plg.file('README.md', fs.readFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/README.md`), {encoding: 'utf8'}));
+	php_plg.file('vk.md', fs.readFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/vk.md`), {encoding: 'utf8'}));
 	php_plg.file('0001.png', fs.readFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/0001.png`)));
 	php_plg.file('0002.png', fs.readFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/0002.png`)));
 	// multiTV photogallery config
 	let php_tvs = zip.folder(`${assets}/tvs/multitv/configs`);
 	php_tvs.file('photogallery.config.inc.php', fs.readFileSync(path.normalize(`${__dirname}/assets/tvs/multitv/configs/photogallery.config.inc.php`), {encoding: 'utf8'}));
 	// pause
-	readMD(path.normalize(`${__dirname}/assets/plugins/evosendbot/README.md`)).then(function(md){
-		let converter = new showdown.Converter({
-				parseImgDimensions: true,
-				tables: true,
-				tablesHeaderId: true,
-				tasklists: true,
-				openLinksInNewWindow: true,
-				completeHTMLDocument: true,
-				metadata: true
-			}),
+	let md = await readMD(path.normalize(`${__dirname}/assets/plugins/evosendbot/vk.md`));
+	let converter = new showdown.Converter({
+			parseImgDimensions: true,
+			tables: true,
+			tablesHeaderId: true,
+			tasklists: true,
+			openLinksInNewWindow: true,
+			completeHTMLDocument: true,
+			metadata: true
+		}),
+		formatter = new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+		formattedDate = formatter.format(new Date()),
+		meta = `---
+title:       Подключение к VK
+author:      ProjectSoft
+version:     ${version}
+web:         https://github.com/ProjectSoft-STUDIONIONS/sendbot
+date:        ${formattedDate}
+---
+`;
 		html = "";
-		converter.setFlavor('github');
-		html = converter.makeHtml(md);
-		fs.writeFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/README.html`), html, {encoding: 'utf8'});
-		php_plg.file('README.html', html);
-	})
+	converter.setFlavor('github');
+	html = converter.makeHtml(meta + md);
+	fs.writeFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/vk.html`), html, {encoding: 'utf8'});
+	php_plg.file('vk.html', html);
 	
 	setTimeout(() =>{
 		let data = zip.generate({base64:false, compression:'DEFLATE'});

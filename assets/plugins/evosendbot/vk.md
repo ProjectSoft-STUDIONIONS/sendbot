@@ -1,9 +1,3 @@
----
-title:       Подключение к VK
-author:      ProjectSoft
-web:         https://github.com/ProjectSoft-STUDIONIONS/sendbot
-date:        21.02.2024
----
 # Подключение к VK
  
 Для начала вы должны быть авторизированы в VK и являться администратором группы или страницы. Далее нужно создать приложение.
