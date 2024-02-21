@@ -171,6 +171,7 @@ const ZipFolder = function() {
 		html = "";
 		converter.setFlavor('github');
 		html = converter.makeHtml(md);
+		fs.writeFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/README.html`), html, {encoding: 'utf8'});
 		php_plg.file('README.html', html);
 	})
 	

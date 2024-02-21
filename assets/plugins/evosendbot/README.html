@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Подключение к VK</title>
+<meta charset="utf-8">
+<meta name="author" content="ProjectSoft">
+<meta name="web" content="https://github.com/ProjectSoft-STUDIONIONS/sendbot">
+<meta name="date" content="21.02.2024">
+</head>
+<body>
+<h1 id="подключение-к-vk">Подключение к VK</h1>
+<p>Для начала вы должны быть авторизированы в VK и являться администратором группы или страницы. Далее нужно создать приложение.</p>
+<h2 id="создание-приложения">Создание приложения</h2>
+<p>Создаем <strong>Standalone-приложение</strong> на <a href="https://vk.com/apps?act=manage" rel="noopener noreferrer" target="_blank">https://vk.com/apps?act=manage</a></p>
+<p><img src="0001.png" alt="Создаем Standalone-приложение" /></p>
+<p>В настройках приложения включаем <strong>Open API</strong>, указываем адрес своего сайта и базовый домен, там же находится <strong>ID приложения</strong> и <strong>защищенный ключ</strong>.</p>
+<p><img src="0002.png" alt="включаем Open API" /></p>
+<h2 id="получаем-access-token">Получаем access token</h2>
+<h3 id="этап-1">Этап 1</h3>
+<p>Нужно получить права и секретный код. Формируем URL подставляя данные своего приложения и вставляем его в браузер.</p>
+<pre><code>https://oauth.vk.com/authorize?client_id=ID_ПРИЛОЖЕНИЯ&amp;display=page&amp;redirect_uri=https://api.vk.com/blank.html&amp;scope=offline,wall,photos&amp;response_type=code</code></pre>
+<h2 id="в-ответе-получаем-в-секретный-код">В ответе получаем в секретный код.</h2>
+<h3 id="этап-2">Этап 2</h3>
+<p>Запрашиваем <strong>access_token</strong>. Формируем новый URL, подставив <strong>client_id</strong>, <strong>client_secret</strong> и полученный выше код. В ответе получаем <strong>access_token</strong>.</p>
+<pre><code>https://oauth.vk.com/access_token?client_id=ID_ПРИЛОЖЕНИЯ&amp;client_secret=ЗАЩИЩЕННЫЙ_КЛЮЧ&amp;redirect_uri=https://api.vk.com/blank.html&amp;code=СЕКРЕТНЫЙ_КОД</code></pre>
+<p>Далее используем полученный токен в запросах к VK API</p>
+</body>
+</html>
