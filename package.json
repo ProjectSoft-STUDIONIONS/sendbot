@@ -1,7 +1,7 @@
 {
 	"name": "sendbot-main",
 	"evoname": "EvoSendBot",
-	"version": "1.0.5",
+	"version": "1.1.0",
 	"description": "Плагин и TV параметры на Evolution CMS для автопостинга новостей, ресурсов в соц. сети, мессенджеры",
 	"main": "index.js",
 	"scripts": {
@@ -20,6 +20,7 @@
 	},
 	"homepage": "https://github.com/ProjectSoft-STUDIONIONS/sendbot#readme",
 	"dependencies": {
-		"node-zip": "^1.1.1"
+		"node-zip": "^1.1.1",
+		"showdown": "^2.1.0"
 	}
 }

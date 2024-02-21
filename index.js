@@ -1,5 +1,6 @@
 const fs = require('fs'),
 	path = require('path'),
+	showdown  = require('showdown'),
 	rmp = path.normalize(__dirname + '/install/assets'),
 	pkg = require(path.normalize(__dirname + '/package.json'));
 const version = pkg.version,
@@ -110,6 +111,23 @@ const version = pkg.version,
 	];
 
 /**
+ * Чтение README
+ */
+const readMD = async function (file) {
+	return new Promise(function(resolve, reject) {
+		let text = "";
+		file = path.normalize(file);
+		fs.stat(file, (err) => {
+			if(!err){
+				text = fs.readFileSync(file, {encoding: 'utf8'});
+				resolve(text);
+			}else{
+				resolve(text);
+			}
+		});
+	});
+}
+/**
  * Сборка архива
  */
 const ZipFolder = function() {
@@ -133,10 +151,29 @@ const ZipFolder = function() {
 	// Плагин
 	let php_plg = zip.folder(`${assets}/plugins/evosendbot`);
 	php_plg.file('plugin.evosendbot.php', fs.readFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/plugin.evosendbot.php`), {encoding: 'utf8'}));
+	php_plg.file('README.md', fs.readFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/README.md`), {encoding: 'utf8'}));
+	php_plg.file('0001.png', fs.readFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/0001.png`)));
+	php_plg.file('0002.png', fs.readFileSync(path.normalize(`${__dirname}/assets/plugins/evosendbot/0002.png`)));
 	// multiTV photogallery config
 	let php_tvs = zip.folder(`${assets}/tvs/multitv/configs`);
 	php_tvs.file('photogallery.config.inc.php', fs.readFileSync(path.normalize(`${__dirname}/assets/tvs/multitv/configs/photogallery.config.inc.php`), {encoding: 'utf8'}));
 	// pause
+	readMD(path.normalize(`${__dirname}/assets/plugins/evosendbot/README.md`)).then(function(md){
+		let converter = new showdown.Converter({
+				parseImgDimensions: true,
+				tables: true,
+				tablesHeaderId: true,
+				tasklists: true,
+				openLinksInNewWindow: true,
+				completeHTMLDocument: true,
+				metadata: true
+			}),
+		html = "";
+		converter.setFlavor('github');
+		html = converter.makeHtml(md);
+		php_plg.file('README.html', html);
+	})
+	
 	setTimeout(() =>{
 		let data = zip.generate({base64:false, compression:'DEFLATE'});
 		fs.writeFileSync(`${pkg.name}.zip`, data, 'binary');
